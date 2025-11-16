@@ -60,6 +60,7 @@ class MCPServer:
         """Handle initialization request with session creation"""
         session_id = str(uuid.uuid4()).replace("-", "")
         session = MCPSession(session_id)
+        self.sessions[session_id] = session
         protocol_version = request.params.get("protocolVersion") if request.params else self.protocol_version
         response = MCPResponse(id=request.id,
                                result={

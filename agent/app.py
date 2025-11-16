@@ -1,29 +1,62 @@
 import asyncio
-import json
 import os
 
-from agent.clients.custom_mcp_client import CustomMCPClient
 from agent.clients.mcp_client import MCPClient
 from agent.clients.openai_client import OpenAIClient
 from agent.models.message import Message, Role
 
 
 async def main():
-    #TODO:
-    # 1. Take a look what applies OpenAIClient
-    # 2. Create empty list where you save tools from MCP Servers later
-    # 3. Create empty dict where where key is str (tool name) and value is instance of MCPClient or CustomMCPClient
-    # 4. Create UMS MCPClient, url is `http://localhost:8006/mcp` (use static method create and don't forget that its async)
-    # 5. Collect tools and dict [tool name, mcp client]
-    # 6. Do steps 4 and 5 for `https://remote.mcpservers.org/fetch/mcp`
-    # 7. Create OpenAIClient
-    # 8. Create array with Messages and add there System message with simple instructions for LLM that it should help to handle user request
-    # 9. Create simple console chat (as we done in previous tasks)
-    raise NotImplementedError()
+    tools = []
+
+    tool_clients: dict[str, MCPClient] = {}
+
+    ums_client = await MCPClient.create("http://localhost:8006/mcp")
+    print("Initialized ums client")
+    ums_tools = await ums_client.get_tools()
+    for tool in ums_tools:
+        tools.append(tool)
+        tool_clients[tool["name"]] = ums_client
+    print(f"UMS tools: {ums_tools}")
+
+    remote_client = await MCPClient.create("https://remote.mcpservers.org/fetch/mcp")
+
+    remote_tools = await remote_client.get_tools()
+    print("Remote client")
+
+    for tool in remote_tools:
+        tools.append(tool)
+        tool_clients[tool["name"]] = remote_client
+    print(f"Remote client tools: {ums_tools}")
+
+    openai_client = OpenAIClient(api_key=os.getenv("OPENAI_API_KEY"), model="gpt-5", tools=tools,
+                                 tool_name_client_map=tool_clients)
+
+    messages = [
+        Message(
+            role=Role.SYSTEM,
+            content="You are an assistant that helps the user. Respond politely and use tools only when needed."
+        )
+    ]
+
+    print("Chat started! Type 'exit' to stop.")
+
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() in ["exit", "quit"]:
+            print("Goodbye!")
+            break
+
+        messages.append(Message(role=Role.USER, content=user_input))
+
+        response = await openai_client.get_completion(messages)
+
+        print("Assistant:", response)
+
+        messages.append(Message(role=Role.AI, content=response))
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-
 
 # Check if Arkadiy Dobkin present as a user, if not then search info about him in the web and add him

@@ -63,7 +63,7 @@ async def handle_mcp_request(
         if not session:
             return Response(status_code=400, content="No valid session ID provided")
 
-        if request.method == "notifications/initialized":
+        if request.method == "initialize":
             session.ready_for_operation = True
             return Response(status_code=202, headers={MCP_SESSION_ID_HEADER: session.session_id})
 
@@ -73,8 +73,7 @@ async def handle_mcp_request(
 
         if request.method == "tools/list":
             mcp_response = mcp_server.handle_tools_list(request)
-
-        if request.method == "tools/call":
+        elif request.method == "tools/call":
             mcp_response = mcp_server.handle_tools_call(request)
         else:
             mcp_response = MCPResponse(id=request.id, error=ErrorResponse(code=-32602, message=f"Method '{request.method}' not found"))
