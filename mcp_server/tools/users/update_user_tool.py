@@ -17,22 +17,15 @@ class UpdateUserTool(BaseUserServiceTool):
     @property
     def input_schema(self) -> dict[str, Any]:
         return {
-            "type": "function",
-            "function": {
-                "name": self.name,
-                "description": self.description,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer",
-                            "description": "The unique ID of the user to update."
-                        },
-                        "new_info": UserUpdate.model_json_schema()
-                    },
-                    "required": ["id", "new_info"]
-                }
-            }
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "description": "The unique ID of the user to update."
+                },
+                "new_info": UserUpdate.model_json_schema()
+            },
+            "required": ["id", "new_info"]
         }
 
     async def execute(self, arguments: dict[str, Any]) -> str:

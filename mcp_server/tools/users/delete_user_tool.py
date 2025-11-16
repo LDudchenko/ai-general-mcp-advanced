@@ -13,27 +13,18 @@ class DeleteUserTool(BaseUserServiceTool):
     def description(self) -> str:
         return "Deletes a user by ID."
 
-
     @property
     def input_schema(self) -> dict[str, Any]:
         return {
-            "type": "function",
-            "function": {
-                "name": self.name,
-                "description": self.description,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer",
-                            "description": "The unique numeric ID of the user to delete"
-                        }
-                    },
-                    "required": ["id"]
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "description": "The unique numeric ID of the user to delete."
                 }
-            }
+            },
+            "required": ["id"]
         }
-
 
     async def execute(self, arguments: dict[str, Any]) -> str:
         user_id = int(arguments.get("id"))

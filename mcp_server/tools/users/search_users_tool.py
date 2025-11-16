@@ -16,33 +16,26 @@ class SearchUsersTool(BaseUserServiceTool):
     @property
     def input_schema(self) -> dict[str, Any]:
         return {
-            "type": "function",
-            "function": {
-                "name": self.name,
-                "description": self.description,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string",
-                            "description": "User's first name to search for (optional)."
-                        },
-                        "surname": {
-                            "type": "string",
-                            "description": "User's last name to search for (optional)."
-                        },
-                        "email": {
-                            "type": "string",
-                            "description": "User's email address to search for (optional)."
-                        },
-                        "gender": {
-                            "type": "string",
-                            "description": "User's gender to search for (optional, e.g., 'male' or 'female')."
-                        }
-                    },
-                    "required": []
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "User's first name to search for (optional)."
                 },
+                "surname": {
+                    "type": "string",
+                    "description": "User's last name to search for (optional)."
+                },
+                "email": {
+                    "type": "string",
+                    "description": "User's email address to search for (optional)."
+                },
+                "gender": {
+                    "type": "string",
+                    "description": "User's gender to search for (optional, e.g., 'male' or 'female')."
+                }
             },
+            "required": []
         }
 
     async def execute(self, arguments: dict[str, Any]) -> str:

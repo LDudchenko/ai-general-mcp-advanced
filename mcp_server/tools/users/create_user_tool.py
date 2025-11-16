@@ -17,12 +17,8 @@ class CreateUserTool(BaseUserServiceTool):
     @property
     def input_schema(self) -> dict[str, Any]:
         return {
-            "type": "function",
-            "function": {
-                "name": self.name,
-                "description": self.description,
-                "parameters": UserCreate.model_json_schema(),
-            },
+            "type": "object",
+            **UserCreate.model_json_schema()
         }
 
     async def execute(self, arguments: dict[str, Any]) -> str:

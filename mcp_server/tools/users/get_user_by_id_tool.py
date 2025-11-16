@@ -16,24 +16,15 @@ class GetUserByIdTool(BaseUserServiceTool):
     @property
     def input_schema(self) -> dict[str, Any]:
         return {
-            "type": "function",
-            "function": {
-                "name": self.name,
-                "description": self.description,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer",
-                            "description": "The unique numeric ID of the user to retrieve."
-                        }
-                    },
-                    "required": ["id"]
-                },
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number",
+                    "description": "User ID"
+                }
             },
+            "required": ["id"]
         }
-    async def execute(self, arguments: dict[str, Any]) -> str:
-        #TODO:
-        # 1. Get int `id` from arguments
-        # 2. Call user_client get_user and return its results (it is async, don't forget to await)
-        raise NotImplementedError()
+
+    async  def execute(self, arguments: dict[str, Any]) -> str:
+            return await self._user_client.get_user(arguments["id"])

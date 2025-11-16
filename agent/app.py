@@ -1,6 +1,7 @@
 import asyncio
 import os
 
+from agent.clients.custom_mcp_client import CustomMCPClient
 from agent.clients.mcp_client import MCPClient
 from agent.clients.openai_client import OpenAIClient
 from agent.models.message import Message, Role
@@ -11,12 +12,13 @@ async def main():
 
     tool_clients: dict[str, MCPClient] = {}
 
+    print("App started")
     ums_client = await MCPClient.create("http://localhost:8006/mcp")
     print("Initialized ums client")
     ums_tools = await ums_client.get_tools()
     for tool in ums_tools:
         tools.append(tool)
-        tool_clients[tool["name"]] = ums_client
+        tool_clients[tool.get('function', {}).get('name')] = ums_client
     print(f"UMS tools: {ums_tools}")
 
     remote_client = await MCPClient.create("https://remote.mcpservers.org/fetch/mcp")
@@ -26,10 +28,10 @@ async def main():
 
     for tool in remote_tools:
         tools.append(tool)
-        tool_clients[tool["name"]] = remote_client
+        tool_clients[tool.get('function', {}).get('name')] = remote_client
     print(f"Remote client tools: {ums_tools}")
 
-    openai_client = OpenAIClient(api_key=os.getenv("OPENAI_API_KEY"), model="gpt-5", tools=tools,
+    openai_client = OpenAIClient(api_key=os.getenv("OPENAI_API_KEY"), model="gpt-4", tools=tools,
                                  tool_name_client_map=tool_clients)
 
     messages = [
@@ -51,9 +53,9 @@ async def main():
 
         response = await openai_client.get_completion(messages)
 
-        print("Assistant:", response)
+        print("Assistant:", response.content)
 
-        messages.append(Message(role=Role.AI, content=response))
+        messages.append(response)
 
 
 if __name__ == "__main__":
