@@ -26,5 +26,5 @@ class GetUserByIdTool(BaseUserServiceTool):
             "required": ["id"]
         }
 
-    async  def execute(self, arguments: dict[str, Any]) -> str:
+    async def execute(self, arguments: dict[str, Any]) -> str:
             return await self._user_client.get_user(arguments["id"])

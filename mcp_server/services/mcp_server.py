@@ -1,3 +1,4 @@
+import json
 import uuid
 import asyncio
 
@@ -88,7 +89,8 @@ class MCPServer:
         arguments = request.params.get("arguments", {})
 
         if not tool_name:
-            return MCPResponse(id=request.id, error=ErrorResponse(code=-32602, message="Missing required parameter: name"))
+            return MCPResponse(id=request.id,
+                               error=ErrorResponse(code=-32602, message="Missing required parameter: name"))
 
         if not tool_name in self.tools:
             return MCPResponse(id=request.id,
@@ -96,7 +98,16 @@ class MCPServer:
         try:
             tool = self.tools[tool_name]
             result_text = await tool.execute(arguments)
-            return MCPResponse(id=request.id, result=result_text)
+            return MCPResponse(id=request.id, result={
+                "content": [
+                    {
+                        "type": "text",
+                        "text": result_text
+                    }
+                ]
+            })
         except Exception as tool_error:
             return MCPResponse(id=request.id,
-                               result={"content": [{"type": "text", "text": f"Tool execution error: {str(tool_error)}"}], "isError": True})
+                               result={
+                                   "content": [{"type": "text", "text": f"Tool execution error: {str(tool_error)}"}],
+                                   "isError": True})

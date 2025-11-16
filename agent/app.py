@@ -13,7 +13,7 @@ async def main():
     tool_clients: dict[str, MCPClient] = {}
 
     print("App started")
-    ums_client = await MCPClient.create("http://localhost:8006/mcp")
+    ums_client = await CustomMCPClient.create("http://localhost:8006/mcp")
     print("Initialized ums client")
     ums_tools = await ums_client.get_tools()
     for tool in ums_tools:
@@ -21,7 +21,7 @@ async def main():
         tool_clients[tool.get('function', {}).get('name')] = ums_client
     print(f"UMS tools: {ums_tools}")
 
-    remote_client = await MCPClient.create("https://remote.mcpservers.org/fetch/mcp")
+    remote_client = await CustomMCPClient.create("https://remote.mcpservers.org/fetch/mcp")
 
     remote_tools = await remote_client.get_tools()
     print("Remote client")
@@ -53,7 +53,6 @@ async def main():
 
         response = await openai_client.get_completion(messages)
 
-        print("Assistant:", response.content)
 
         messages.append(response)
 

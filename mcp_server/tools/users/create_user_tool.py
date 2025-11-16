@@ -22,6 +22,9 @@ class CreateUserTool(BaseUserServiceTool):
         }
 
     async def execute(self, arguments: dict[str, Any]) -> str:
-        user_data = UserCreate.model_validate(arguments)
-        created_user = await self._user_client.add_user(user_data)
-        return created_user
+        try:
+            user_data = UserCreate.model_validate(arguments)
+            created_user = await self._user_client.add_user(user_data)
+            return created_user
+        except Exception as e:
+            return f"Error during user creation: {e}"

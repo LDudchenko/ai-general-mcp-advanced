@@ -201,15 +201,13 @@ class CustomMCPClient:
 
         tools_list = []
         for tool in tools_raw:
-            parameters = tool.get("parameters")
 
             tools_list.append({
                 "type": "function",
                 "function": {
                     "name": tool.get("name"),
                     "description": tool.get("description", ""),
-                    "parameters": parameters,
-                    "strict": True
+                    "parameters": tool.get("inputSchema", {})
                 }
             })
 
