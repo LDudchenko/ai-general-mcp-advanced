@@ -50,8 +50,6 @@ class CustomMCPClient:
                 return {}
 
             content_type = response.headers.get("Content-Type", "")
-            print(response)
-            print(f"Content-Type: {content_type}")
             if "text/event-stream" in content_type.lower():
                 response_data = await self._parse_sse_response_streaming(response)
             else:
